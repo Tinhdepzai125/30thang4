@@ -9,7 +9,6 @@
     <style>
 @import url('https://fonts.googleapis.com/css2?family=Fjalla+One&display=swap');
 </style>
-
     <style>
         :root {
             --red:     #c0392b;
@@ -25,6 +24,145 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ── Freeze tất cả khi chưa bắt đầu ── */
+        body.paused * {
+            animation-play-state: paused !important;
+        }
+
+        /* ── Overlay ── */
+        #overlay {
+            position: fixed; inset: 0;
+            z-index: 8000;
+            background:
+                repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(26,14,5,0.06) 3px, rgba(26,14,5,0.06) 4px),
+                linear-gradient(165deg, #9b1c1c 0%, #6b0f0f 40%, #1a0505 100%);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            transition: opacity 0.8s ease;
+        }
+        #overlay.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+        /* Viền kép */
+        #overlay-border {
+            position: absolute; inset: 18px;
+            border: 2px solid rgba(201,151,42,0.4);
+            pointer-events: none;
+        }
+        #overlay-border::before {
+            content: '';
+            position: absolute; inset: 6px;
+            border: 1px solid rgba(201,151,42,0.2);
+        }
+        /* Tia sáng rays */
+        #overlay-rays {
+            position: absolute; inset: 0;
+            background: conic-gradient(from 0deg at 50% 50%,
+                rgba(201,151,42,0.0) 0deg, rgba(201,151,42,0.05) 8deg,
+                rgba(201,151,42,0.0) 10deg, rgba(201,151,42,0.05) 18deg,
+                rgba(201,151,42,0.0) 20deg, rgba(201,151,42,0.05) 28deg,
+                rgba(201,151,42,0.0) 30deg, rgba(201,151,42,0.05) 38deg,
+                rgba(201,151,42,0.0) 40deg, rgba(201,151,42,0.05) 48deg,
+                rgba(201,151,42,0.0) 50deg, rgba(201,151,42,0.05) 58deg,
+                rgba(201,151,42,0.0) 60deg, rgba(201,151,42,0.05) 68deg,
+                rgba(201,151,42,0.0) 70deg, rgba(201,151,42,0.05) 78deg,
+                rgba(201,151,42,0.0) 80deg, rgba(201,151,42,0.05) 88deg,
+                rgba(201,151,42,0.0) 90deg, rgba(201,151,42,0.05) 98deg,
+                rgba(201,151,42,0.0) 100deg, rgba(201,151,42,0.05) 108deg,
+                rgba(201,151,42,0.0) 110deg, rgba(201,151,42,0.05) 118deg,
+                rgba(201,151,42,0.0) 120deg, rgba(201,151,42,0.05) 128deg,
+                rgba(201,151,42,0.0) 130deg, rgba(201,151,42,0.05) 138deg,
+                rgba(201,151,42,0.0) 140deg, rgba(201,151,42,0.05) 148deg,
+                rgba(201,151,42,0.0) 150deg, rgba(201,151,42,0.05) 158deg,
+                rgba(201,151,42,0.0) 160deg, rgba(201,151,42,0.05) 168deg,
+                rgba(201,151,42,0.0) 170deg, rgba(201,151,42,0.05) 178deg,
+                rgba(201,151,42,0.0) 180deg, rgba(201,151,42,0.05) 188deg,
+                rgba(201,151,42,0.0) 190deg, rgba(201,151,42,0.05) 198deg,
+                rgba(201,151,42,0.0) 200deg, rgba(201,151,42,0.05) 208deg,
+                rgba(201,151,42,0.0) 210deg, rgba(201,151,42,0.05) 218deg,
+                rgba(201,151,42,0.0) 220deg, rgba(201,151,42,0.05) 228deg,
+                rgba(201,151,42,0.0) 230deg, rgba(201,151,42,0.05) 238deg,
+                rgba(201,151,42,0.0) 240deg, rgba(201,151,42,0.05) 248deg,
+                rgba(201,151,42,0.0) 250deg, rgba(201,151,42,0.05) 258deg,
+                rgba(201,151,42,0.0) 260deg, rgba(201,151,42,0.05) 268deg,
+                rgba(201,151,42,0.0) 270deg, rgba(201,151,42,0.05) 278deg,
+                rgba(201,151,42,0.0) 280deg, rgba(201,151,42,0.05) 288deg,
+                rgba(201,151,42,0.0) 290deg, rgba(201,151,42,0.05) 298deg,
+                rgba(201,151,42,0.0) 300deg, rgba(201,151,42,0.05) 308deg,
+                rgba(201,151,42,0.0) 310deg, rgba(201,151,42,0.05) 318deg,
+                rgba(201,151,42,0.0) 320deg, rgba(201,151,42,0.05) 328deg,
+                rgba(201,151,42,0.0) 330deg, rgba(201,151,42,0.05) 338deg,
+                rgba(201,151,42,0.0) 340deg, rgba(201,151,42,0.05) 348deg,
+                rgba(201,151,42,0.0) 350deg, rgba(201,151,42,0.05) 358deg,
+                rgba(201,151,42,0.0) 360deg
+            );
+            animation: raysRotate 60s linear infinite;
+        }
+        @keyframes raysRotate { to { transform: rotate(360deg); } }
+
+        #overlay-content { position: relative; z-index: 1; }
+        .ov-star svg {
+            width: clamp(56px, 12vw, 88px);
+            filter: drop-shadow(0 0 18px rgba(201,151,42,0.8));
+            animation: ovStarPulse 2.5s ease-in-out infinite;
+            margin-bottom: 16px;
+        }
+        @keyframes ovStarPulse {
+            0%,100% { filter: drop-shadow(0 0 12px rgba(201,151,42,0.5)); }
+            50%      { filter: drop-shadow(0 0 28px rgba(201,151,42,1)) drop-shadow(0 0 55px rgba(201,151,42,0.4)); }
+        }
+        .ov-date {
+            font-family: 'Fjalla One', sans-serif;
+            font-size: clamp(4rem, 16vw, 9rem);
+            line-height: 0.9;
+            color: var(--gold-lt);
+            letter-spacing: 0.06em;
+            text-shadow: 3px 3px 0 var(--red-dk), 6px 6px 0 rgba(80,10,10,0.45);
+        }
+        .ov-sub {
+            font-family: 'Fjalla One', sans-serif;
+            font-size: clamp(0.9rem, 3vw, 1.4rem);
+            letter-spacing: 0.22em;
+            color: var(--cream);
+            opacity: 0.85;
+            margin-top: 8px;
+        }
+        .ov-rule {
+            width: 100px; height: 2px;
+            background: linear-gradient(to right, transparent, var(--gold), transparent);
+            margin: 18px auto;
+        }
+        .ov-hint {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: clamp(0.75rem, 2vw, 0.95rem);
+            color: rgba(242,232,208,0.55);
+            letter-spacing: 0.08em;
+            animation: hintBlink 2.2s ease-in-out infinite;
+        }
+        @keyframes hintBlink {
+            0%,100% { opacity: 0.4; }
+            50%      { opacity: 0.9; }
+        }
+        .ov-band {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 40px;
+            background: var(--gold);
+            display: flex; align-items: center; justify-content: center;
+            gap: 14px;
+        }
+        .ov-band span {
+            font-family: 'Fjalla One', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 0.32em;
+            color: var(--red-dk);
+        }
 
         html { scroll-behavior: smooth; }
 
@@ -563,6 +701,28 @@ footer {
 </head>
 <body>
 
+<!-- ── OVERLAY ── -->
+<div id="overlay">
+    <div id="overlay-rays"></div>
+    <div id="overlay-border"></div>
+    <div id="overlay-content">
+        <div class="ov-star">
+            <svg viewBox="0 0 100 95" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35" fill="#e8c060"/>
+            </svg>
+        </div>
+        <div class="ov-date">30.4</div>
+        <div class="ov-sub">1975 · 2026</div>
+        <div class="ov-rule"></div>
+        <div class="ov-hint">✦ Chạm để bước vào ✦</div>
+    </div>
+    <div class="ov-band">
+        <span>★</span>
+        <span>Độc Lập · Tự Do · Hạnh Phúc</span>
+        <span>★</span>
+    </div>
+</div>
+
 <div class="page">
 
     <!-- ── HERO ── -->
@@ -800,39 +960,39 @@ footer {
     function windowResized() { resizeCanvas(windowWidth, windowHeight); }
 </script>
 
-<!-- Scroll reveal -->
+<!-- Scroll reveal + Overlay logic -->
 <script>
-  function toast(msg) {
-    const el = document.createElement('div');
-    el.textContent = msg;
-    el.style.cssText = `
-        position: fixed; bottom: 30px; left: 30%;
-        transform: translateX(-50%);
-        background: rgba(0,0,0,0); color: white;
-        padding: 12px 24px; border-radius: 4px;
-        z-index: 9999; font-size: 0.9rem;
-    `;
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 5000); // tự mất sau 3 giây
-}
+    // Freeze ngay khi load
+    document.body.classList.add('paused');
 
-toast("Click vào vị trí bất kỳ để xem toàn màn hình nhé!");
+    const overlay = document.getElementById('overlay');
+    const audio = new Audio('music.mp3');
+    audio.loop = true;
+
+function startExperience() {
+    // Tạo audio TRONG này, sau khi đã có tương tác
+    const audio = new Audio('music.mp3');
+    audio.loop = true;
+    audio.play().catch((e) => { console.log('Audio error:', e); });
+
+        // Unfreeze animations
+        document.body.classList.remove('paused');
+        // Fade out overlay rồi remove
+        overlay.classList.add('hide');
+        setTimeout(() => overlay.remove(), 850);
+    }
+
+    ['click', 'touchstart'].forEach(evt => {
+        overlay.addEventListener(evt, startExperience, { once: true });
+    });
+
+    // Scroll reveal (chỉ chạy sau khi bắt đầu)
     const obs = new IntersectionObserver(entries => {
         entries.forEach(e => {
             if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
         });
     }, { threshold: 0.12 });
     document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-    ['click', 'touchstart'].forEach(evt => {
-    document.addEventListener(evt, () => {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
-        }
-        const audio = new Audio('music.mp3');
-        audio.play();
-    }, { once: true });
-});
-
 </script>
 
 </body>
