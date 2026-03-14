@@ -32,6 +32,9 @@
 
         /* ── Overlay ── */
         #overlay {
+            /* reset button defaults */
+            border: none; outline: none;
+            font: inherit; text-align: inherit;
             position: fixed; inset: 0;
             z-index: 8000;
             background:
@@ -702,7 +705,7 @@ footer {
 <body>
 
 <!-- ── OVERLAY ── -->
-<div id="overlay">
+<button id="overlay">
     <div id="overlay-rays"></div>
     <div id="overlay-border"></div>
     <div id="overlay-content">
@@ -721,7 +724,7 @@ footer {
         <span>Độc Lập · Tự Do · Hạnh Phúc</span>
         <span>★</span>
     </div>
-</div>
+</button>
 
 <div class="page">
 
@@ -962,19 +965,21 @@ footer {
 
 <!-- Scroll reveal + Overlay logic -->
 <script>
+  
     // Freeze ngay khi load
     document.body.classList.add('paused');
 
     const overlay = document.getElementById('overlay');
-    const audio = new Audio('music.mp3');
-    audio.loop = true;
 
-function startExperience() {
-    // Tạo audio TRONG này, sau khi đã có tương tác
-    const audio = new Audio('music.mp3');
-    audio.loop = true;
-    audio.play().catch((e) => { console.log('Audio error:', e); });
-
+    function startExperience() {
+        // Bật nhạc — tạo trong handler để đảm bảo user gesture
+        const bgMusic = new Audio('music.mp3');
+        bgMusic.loop = true;
+        bgMusic.play();
+        // Full screen
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch(() => {});
+        }
         // Unfreeze animations
         document.body.classList.remove('paused');
         // Fade out overlay rồi remove
@@ -982,7 +987,7 @@ function startExperience() {
         setTimeout(() => overlay.remove(), 850);
     }
 
-    ['click', 'touchstart'].forEach(evt => {
+    ['click'].forEach(evt => {
         overlay.addEventListener(evt, startExperience, { once: true });
     });
 
@@ -993,6 +998,19 @@ function startExperience() {
         });
     }, { threshold: 0.12 });
     document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+    let touchStartY = 0;
+
+overlay.addEventListener('click', (e) => {
+    touchStartY = e.touches[0].clientY;
+}, { passive: true });
+
+overlay.addEventListener('clicked', (e) => {
+    const diff = Math.abs(e.changedTouches[0].clientY - touchStartY);
+    if (diff > 10) return; // vuốt thì bỏ qua
+    startExperience();
+}, { once: true });
+
+overlay.addEventListener('click', startExperience, { once: true });
 </script>
 
 </body>
